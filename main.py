@@ -34,7 +34,16 @@ def main():
     )
     
 
-    # llm = ChatAnthropic(model="claude-sonnet-4.6",)
+    # llm = ChatAnthropic(
+    #         model="claude-sonnet-4-5-20250929", # pyright: ignore[reportCallIssue]
+    #         # temperature=,
+    #         # max_tokens=,
+    #         # timeout=,
+    #         # max_retries=,
+    #         # base_url="...",
+    #         # Refer to API reference for full list of parameters
+    #     ) # type: ignore
+    
     llm = ChatOllama(model="llama3.2:1b",temperature=0)
 
     
