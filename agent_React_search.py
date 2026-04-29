@@ -29,12 +29,12 @@ react_prompt = hub.pull("hwchase17/react")
 tools =[TavilySearch()]
 llm_ollama = ChatOllama(model="qwen3.5:0.8b",temperature=0)
 llm_anth = ChatAnthropic(model="claude-sonnet-4-5-20250929",temperature=0) # type: ignore
-
-output_parser = PydanticOutputParser(pydantic_object=AgentResponse)
+structured_llm = llm_anth.with_structured_output(AgentResponse)
+# output_parser = PydanticOutputParser(pydantic_object=AgentResponse)
 structured_react_prompt = PromptTemplate(
     template=REACT_PROMPT_WITH_FORMAT_INSTRUCTIONS,
     input_variables=["input", "agent_scratchpad", "tool_names"]
-).partial(format_instructions=output_parser.get_format_instructions()) # type: ignore
+).partial(format_instructions="") # type: ignore
 
 
 # 3. エージェントの作成  rto build an easonable agent
@@ -43,13 +43,13 @@ agent = create_react_agent(llm_anth, tools, structured_react_prompt)
 # 4. Executorの作成
 agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
 extract_output = RunnableLambda(lambda x: x["output"])
-parse_output = RunnableLambda(lambda x: output_parser.parse(x))
-chain = agent_executor | extract_output | parse_output
+# parse_output = RunnableLambda(lambda x: output_parser.parse(x))
+chain = agent_executor | extract_output | structured_llm
 
 
 result = chain.invoke(
         input={
-            "input":"search for 2 job posting for an ai engineer using langchain in the tokyo area on linkedin ",
+            "input":"search for 2 job posting for an ai engineer using langchain in the tokyo area on linkedin for rookie",
 
         }
 )
