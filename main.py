@@ -1,13 +1,14 @@
 from dotenv import load_dotenv
 from langchain_core.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
 
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
 
 import os
 
-load_dotenv(dotenv_path=Path(__file__).parent / ".env", override=True)
+load_dotenv()
 
 # path = find_dotenv()
 # print("found .env at:", repr(path))        # '' means not found
@@ -40,7 +41,13 @@ def main():
         input_variables=["information"], template=summary_template
     )
 
-    llm = ChatOpenAI(temperature=0, model="gpt-5.4-mini")
+    # llm = ChatOpenAI(temperature=0, model="gpt-5.4-mini")
+    llm = ChatOllama(temperature=0, model="gemma:270m ")
+    # interesting observation about cost time of different size module
+    # gemma3:270>3.71s gemma3:4b> 21.45s qwen3.5:9b>494.28s
+    # the size maybe mainly mean how much resource it take with accordingly time
+    # if there is no specific size required, choose one fit your PC memory
+
     chain = summary_prompt_template | llm
     response = chain.invoke(input={"information": information})
     print(response.content)
