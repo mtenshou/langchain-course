@@ -18,11 +18,11 @@ REFLECT = "reflect"
 GENERATE = "generate"
 
 def generation_node(state: MessageGraph):
-    return {"massages":[generate_chain.invoke({"messages": state["messages"]})]}
+    return {"messages":[generate_chain.invoke({"messages": state["messages"]})]}
 
 def reflection_node(state: MessageGraph):
     res = reflection_chain.invoke({"messages": state["messages"]})
-    return {"massages": [HumanMessage(content=res.content)]}
+    return {"messages": [HumanMessage(content=res.content)]}
 
 builder = StateGraph(state_schema=MessageGraph)
 builder.add_node(GENERATE, generation_node)
